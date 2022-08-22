@@ -1,0 +1,83 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/budget-tracker/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/budget-tracker",
+        "index": "apps/budget-tracker/src/index.html",
+        "baseHref": "/",
+        "main": "apps/budget-tracker/src/main.tsx",
+        "polyfills": "apps/budget-tracker/src/polyfills.ts",
+        "tsConfig": "apps/budget-tracker/tsconfig.app.json",
+        "assets": [
+          "apps/budget-tracker/src/favicon.ico",
+          "apps/budget-tracker/src/assets"
+        ],
+        "styles": ["apps/budget-tracker/src/styles.scss"],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/budget-tracker/src/environments/environment.ts",
+              "with": "apps/budget-tracker/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/web:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "budget-tracker:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "budget-tracker:build:development"
+        },
+        "production": {
+          "buildTarget": "budget-tracker:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/budget-tracker/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/budget-tracker"],
+      "options": {
+        "jestConfig": "apps/budget-tracker/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
