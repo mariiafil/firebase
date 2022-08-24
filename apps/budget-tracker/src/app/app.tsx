@@ -1,14 +1,19 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './app.module.scss';
-import NxWelcome from './nx-welcome';
+import { BrowserRouter } from "react-router-dom";
+import { ThemeProvider } from "@mui/material";
+import { AuthProvider } from "@app/lib";
+import { AppRoutes } from "../routes";
+import theme from "../../../../libs/libs/app/src/lib/theme/theme";
 
 export function App() {
-  return (
-    <>
-      <NxWelcome title="budget-tracker" />
-      <div />
-    </>
-  );
+	return (
+		<AuthProvider>
+			<ThemeProvider theme={theme}>
+				<BrowserRouter>
+					<AppRoutes />
+				</BrowserRouter>
+			</ThemeProvider>
+		</AuthProvider>
+	);
 }
 
 export default App;
