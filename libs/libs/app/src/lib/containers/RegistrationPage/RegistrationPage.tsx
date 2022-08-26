@@ -1,5 +1,10 @@
-import { FC, FormEvent, useState } from "react";
+import {
+	FC, FormEvent, useState
+} from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  addDoc, collection
+} from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import {
 	Alert,
@@ -10,14 +15,14 @@ import {
 	Snackbar,
 	TextField
 } from "@mui/material";
-import { auth } from "../../../../fitebaseconfig";
+import { auth, db } from "../../../../fitebaseconfig";
+import { AppRoutesEnum } from "../../types";
 
 export const RegistrationPage: FC = () => {
 	const [passwordCorrect, setPasswordCorrect] = useState(true);
 	const navigate = useNavigate();
 	const [openAlert, settOpenAlert] = useState(false);
 	const [error, setError] = useState("");
-	console.log(auth);
 
 	const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -28,6 +33,7 @@ export const RegistrationPage: FC = () => {
 			password: data.get("password") as string,
 			confirm_password: data.get("confirm_password")
 		};
+
 		if (
 			values.password === values.confirm_password &&
 			values?.email?.length
@@ -37,7 +43,32 @@ export const RegistrationPage: FC = () => {
 					auth,
 					values.email,
 					values.password
-				).then(() => navigate("/"));
+				)
+					.then(async (res) => {
+						const profileRef = collection(
+							db,
+							"profiles"
+						);
+						await Promise.all([
+							addDoc(
+								collection(
+									profileRef,
+									res.user.uid,
+									"accounts"
+								),
+								{ title: "Cash", operations: [] }
+							),
+							res.user.getIdToken().then((tokenRes) => {
+								localStorage.setItem(
+									"token",
+									tokenRes ?? ""
+								);
+							})
+						]);
+					})
+					.then(() => {
+						navigate("/");
+					});
 			} catch (err) {
 				let errorMessage = "Failed to do something exceptional";
 				if (err instanceof Error) {
@@ -124,7 +155,7 @@ export const RegistrationPage: FC = () => {
 				>
 					<Grid item>
 						<Link
-							href="/login"
+							href={AppRoutesEnum.LOGIN}
 							variant="body2"
 						>
 							Already have an account? Sign in

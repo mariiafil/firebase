@@ -1,4 +1,6 @@
-import { FC, FormEvent, useState } from "react";
+import {
+	FC, FormEvent, useState
+} from "react";
 import {
 	Alert,
 	Box,
@@ -21,6 +23,7 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider } from "../../../../fitebaseconfig";
 import { useAuth } from "../../contexts";
+import { AppRoutesEnum } from "../../types";
 
 export const LoginPage: FC = () => {
 	const [openAlert, setOpenAlert] = useState(false);
@@ -36,7 +39,21 @@ export const LoginPage: FC = () => {
 			password: data.get("password") as string
 		};
 		try {
-			await signInWithEmailAndPassword(auth, value.email, value.password);
+			await signInWithEmailAndPassword(
+				auth,
+				value.email,
+				value.password
+			).then(async (result) => {
+
+				let token = "";
+				await result.user.getIdToken().then((tokenRes) => {
+					token = tokenRes;
+				});
+				localStorage.setItem(
+					"token",
+					token ?? ""
+				);
+			});
 		} catch (err) {
 			let errorMessage = "Failed to do something exceptional";
 			if (err instanceof Error) {
@@ -48,18 +65,20 @@ export const LoginPage: FC = () => {
 	};
 
 	const handleGoogleLogin = () => {
-		signInWithRedirect(auth, googleProvider);
+		signInWithRedirect(
+			auth,
+			googleProvider
+		);
 		getRedirectResult(auth)
 			.then((result) => {
-				// This gives you a Google Access Token. You can use it to access Google APIs.
 				if (result) {
 					const credential =
 						GoogleAuthProvider.credentialFromResult(result);
 					const token = credential?.accessToken;
-
-					// The signed-in user info.
-					const user = result?.user;
-					console.log(user, token, result);
+					localStorage.setItem(
+						"token",
+						token ?? ""
+					);
 				}
 			})
 			.catch((err) => {
@@ -71,16 +90,19 @@ export const LoginPage: FC = () => {
 
 	const handleFbLogin = () => {
 		const provider = new FacebookAuthProvider();
-		signInWithPopup(auth, provider)
+		signInWithPopup(
+			auth,
+			provider
+		)
 			.then((result) => {
 				const user = result.user;
-
 				const credential =
 					FacebookAuthProvider.credentialFromResult(result);
 				const accessToken = credential?.accessToken;
-				console.log(user, accessToken);
-
-				// ...
+				localStorage.setItem(
+					"token",
+					accessToken ?? ""
+				);
 			})
 			.catch((err) => {
 				const errorMessage = err.message;
@@ -90,7 +112,8 @@ export const LoginPage: FC = () => {
 	};
 
 	const logOut = () => {
-		signOut(auth);
+		signOut(auth)
+		localStorage.removeItem("token");
 	};
 
 	return (
@@ -135,7 +158,7 @@ export const LoginPage: FC = () => {
 				>
 					<Grid item>
 						<Link
-							href="/registration"
+							href={AppRoutesEnum.REGISTRATION}
 							variant="body2"
 						>
 							Don't have an account? Sign Up

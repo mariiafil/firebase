@@ -36,4 +36,25 @@ const theme = createTheme({
 	}
 });
 
+theme.components = {
+	MuiTypography: {
+		styleOverrides: {
+			paragraph: {
+				fontFamily: "Montserrat",
+				fontSize: "14px",
+				fontWeight: "500",
+				lineHeight: "24px",
+				letterSpacing: "0",
+				textAlign: "left"
+			},
+			body1: {
+				color: theme.palette.common.white
+			},
+			body2: {
+				color: theme.palette.common.white
+			}
+		}
+	}
+};
+
 export default theme;

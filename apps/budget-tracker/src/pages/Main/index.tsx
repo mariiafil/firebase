@@ -1,7 +1,8 @@
 import { FC } from "react";
+import { AccountsPage } from "@app/lib";
 
 const Main: FC = () => {
-	return <>Main</>;
+	return <AccountsPage/>;
 };
 
 export default Main;
