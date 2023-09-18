@@ -6,5 +6,3 @@
 - npm i
 - npm start
 - open localhost:4200
-
-### Deploy is available [here](https://budget-tracker-react-nx.web.app/)
